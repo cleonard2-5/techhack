@@ -2,6 +2,9 @@ import os
 import random
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_random_song_from_playlist(playlist_url):
     try:
