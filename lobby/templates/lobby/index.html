@@ -47,9 +47,10 @@
                     </div>
                     <select class="form-select custom-pixel-input" id="genre-select">
                         <option value="none">Pick a genre...</option>
+                        <option value="alt">Alternative</option>
+                        <option value="emo">emo</option>
                         <option value="pop">Pop</option>
-                        <option value="folk">Folk</option>
-                        <option value="rock">Rock</option>
+                        <option value="vocaloid">Vocaloid</option>
                     </select>
                 </div>
                 
@@ -60,10 +61,10 @@
                     </div>
                     <select class="form-select custom-pixel-input" id="mode-artist">
                         <option value="none">Pick an artist...</option>
-                        <option value="taylor_swift">Taylor Swift</option>
-                        <option value="hozier">Hozier</option>
+                        <option value="bear_ghost">Bear Ghost</option>
                         <option value="bruno_mars">Bruno Mars</option>
                         <option value="set_it_off">Set It Off</option>
+                        <option value="tyler_the_creator">Tyler the Creator</option>
                     </select>
                 </div>
                 
@@ -113,12 +114,28 @@
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
+        if (data.type === 'lobby_error') {
+            alert("⚠️ " + data.message);
+            return; // Stop the code here
+        }
+
+        if (data.type === 'redirect') {
+            const baseUrl = "{% url 'game.index' %}";
+            window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
+        }
+
         // If it's a chat message, update the chat log
         if (data.message) {
             const chatLog = document.querySelector('#chat-log');
             chatLog.value += (data.user + ': ' + data.message + '\n');
             chatLog.scrollTop = chatLog.scrollHeight;
         }
+
+        if (data.type === 'redirect') {
+            const baseUrl = "{% url 'game.index' %}";
+            window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
+        }
+
 
         // If it's a completely refreshed player list from the backend
         if (data.type === 'player_list') {
