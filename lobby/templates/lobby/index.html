@@ -32,7 +32,7 @@
                 </div>
                 
                 <div class="d-flex gap-2">
-                    <button class="btn-pixel-action btn-start">START</button>
+                    <button class="btn-pixel-action btn-start" href="{% url "game.index" %}">START</button>
                     <button class="btn-pixel-action btn-leave">QUIT</button>
                 </div>
             </div>
@@ -102,6 +102,7 @@
 
     // --- WEBSOCKET LOGIC ---
     const lobbyId = "{{ lobby_id }}";
+    const currentUsername = "{{ user.username }}"; // Get the logged-in user's name
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     
     const chatSocket = new WebSocket(
@@ -119,23 +120,42 @@
             chatLog.scrollTop = chatLog.scrollHeight;
         }
 
-        // If it's a new player joining, update the player list
-        if (data.type === 'new_player') {
+
+        // If it's a completely refreshed player list from the backend
+        if (data.type === 'player_list') {
             const playerList = document.getElementById('player-list');
-            const isHost = playerList.children.length === 0;
-            const newTag = document.createElement('div');            
-            newTag.className = "alert cozy-card d-flex justify-content-between align-items-center shadow-sm mb-2 w-100 p-2";
+            playerList.innerHTML = ''; // Wipe the current list clean
             
-            let badgeHTML = '';
-            if (isHost) {
-                badgeHTML = `<span class="badge rounded-pill bg-dark stardew-font" style="font-size: 0.7rem; display: inline-block !important;">HOST</span>`;
+            const players = data.players;
+            const startBtn = document.querySelector('.btn-start');
+            
+            // Check if the current user is the very first person in the array
+            if (players.length > 0 && players[0] === currentUsername) {
+                if(startBtn) startBtn.style.display = 'inline-block';
             } else {
-                // Hide start button for non-hosts
-                const startBtn = document.querySelector('.btn-start');
                 if(startBtn) startBtn.style.display = 'none';
             }
-            newTag.innerHTML = `<strong>${data.username}</strong> ${badgeHTML}`;
-            playerList.append(newTag);
+
+            // Loop through the array and render tags
+            players.forEach((player, index) => {
+                const newTag = document.createElement('div');            
+                newTag.className = "alert cozy-card d-flex justify-content-between align-items-center shadow-sm mb-2 w-100 p-2";
+                
+                let badgeHTML = '';
+                // The person at index 0 is officially the host
+                if (index === 0) {
+                    badgeHTML = `<span class="badge rounded-pill bg-dark stardew-font" style="font-size: 0.7rem; display: inline-block !important;">HOST</span>`;
+                }
+                
+                newTag.innerHTML = `<strong>${player}</strong> ${badgeHTML}`;
+                playerList.append(newTag);
+            });
+        }
+
+        if (data.type === 'redirect') {
+            const baseUrl = "{% url 'game.index' %}";
+            // Build a URL with the settings attached (e.g., /lobby/game/?mode=genre&rounds=5)
+            window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
         }
     };
 
@@ -167,14 +187,11 @@
         const rounds = roundsInput.value;
         let detail = "";
 
-        if (selectedMode === 'genre') {
-            detail = document.getElementById('genre-select').value;
-        } else if (selectedMode === 'artist') {
-            detail = document.getElementById('mode-artist').value;
-        } else {
-            detail = document.getElementById('spotify-input').value;
-        }
+        if (selectedMode === 'genre') detail = document.getElementById('genre-select').value;
+        else if (selectedMode === 'artist') detail = document.getElementById('mode-artist').value;
+        else detail = document.getElementById('spotify-input').value;
 
+        // Send config to consumers.py
         chatSocket.send(JSON.stringify({
             'type': 'start_game',
             'game_mode': selectedMode,
@@ -182,8 +199,6 @@
             'detail': detail
         }));
         
-        // Temporarily send them to the game page directly for testing
-        window.location.href = "{% url 'game.index' %}";
     });
 </script>
 {% endblock content %}
