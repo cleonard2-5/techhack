@@ -44,7 +44,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         
-        # We handle chat messages here
+        # 1. ONLY do this if the user sent a chat message
         if 'message' in data:
             await self.channel_layer.group_send(
                 self.lobby_group_name,
@@ -52,6 +52,18 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                     'type': 'lobby_message',
                     'message': data['message'],
                     'user': self.username
+                }
+            )
+            
+        # 2. ONLY do this if the host clicked START
+        elif data.get('type') == 'start_game':
+            await self.channel_layer.group_send(
+                self.lobby_group_name,
+                {
+                    'type': 'game_start_redirect',
+                    'game_mode': data['game_mode'],
+                    'rounds': data['rounds'],
+                    'detail': data['detail']
                 }
             )
 
