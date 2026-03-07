@@ -135,12 +135,6 @@
             chatLog.scrollTop = chatLog.scrollHeight;
         }
 
-        if (data.type === 'redirect') {
-            const baseUrl = "{% url 'game.index' %}";
-            window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
-        }
-
-
         // If it's a completely refreshed player list from the backend
         if (data.type === 'player_list') {
             const playerList = document.getElementById('player-list');
@@ -170,13 +164,6 @@
                 newTag.innerHTML = `<strong>${player}</strong> ${badgeHTML}`;
                 playerList.append(newTag);
             });
-        }
-
-        // Handle the redirect command from the server
-        if (data.type === 'redirect') {
-            const baseUrl = "{% url 'game.index' %}";
-            // Build a URL with the settings attached
-            window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
         }
     };
 

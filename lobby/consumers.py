@@ -110,35 +110,6 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             'message': event['message'],
             'user': event['user']
         }))
-        
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        
-        # Handle Chat Messages
-        if 'message' in data:
-            await self.channel_layer.group_send(
-                self.lobby_group_name,
-                {
-                    'type': 'lobby_message',
-                    'message': data['message'],
-                    'user': self.username
-                }
-            )
-        # Handle Game Start Config
-        elif data.get('type') == 'start_game':
-            await self.channel_layer.group_send(
-                self.lobby_group_name,
-                {
-                    'type': 'game_start_redirect',
-                    'game_mode': data['game_mode'],
-                    'rounds': data['rounds'],
-                    'detail': data['detail']
-                }
-            )
-
-    # --- CUSTOM EVENT HANDLERS ---
-    
-    # ... (Keep your broadcast_player_list, player_list_update, and lobby_message functions here)
 
     # ADD THIS NEW FUNCTION TO THE BOTTOM
     async def game_start_redirect(self, event):
