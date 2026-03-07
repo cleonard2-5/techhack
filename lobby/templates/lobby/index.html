@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container vh-100 d-flex align-items-center justify-content-center">
+<div class="container d-flex align-items-center justify-content-center py-4" style="min-height: calc(100vh - 160px);">
     <div class="lobby-main-panel p-4 shadow-lg w-100" style="max-width: 900px;">
         <h2 class="stardew-font text-center mb-4" style="color: #634d31;">Lobby</h2>
         <div class="row">
@@ -32,7 +32,7 @@
                 </div>
                 
                 <div class="d-flex gap-2">
-                    <button class="btn-pixel-action btn-start" href="{% url "game.index" %}">START</button>
+                    <button class="btn-pixel-action btn-start" style="display: none;">START</button>
                     <button class="btn-pixel-action btn-leave">QUIT</button>
                 </div>
             </div>
@@ -102,7 +102,7 @@
 
     // --- WEBSOCKET LOGIC ---
     const lobbyId = "{{ lobby_id }}";
-    const currentUsername = "{{ user.username }}"; // Get the logged-in user's name
+    const currentUsername = "{{ user.username }}"; 
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
     
     const chatSocket = new WebSocket(
@@ -119,7 +119,6 @@
             chatLog.value += (data.user + ': ' + data.message + '\n');
             chatLog.scrollTop = chatLog.scrollHeight;
         }
-
 
         // If it's a completely refreshed player list from the backend
         if (data.type === 'player_list') {
@@ -152,9 +151,10 @@
             });
         }
 
+        // Handle the redirect command from the server
         if (data.type === 'redirect') {
             const baseUrl = "{% url 'game.index' %}";
-            // Build a URL with the settings attached (e.g., /lobby/game/?mode=genre&rounds=5)
+            // Build a URL with the settings attached
             window.location.href = baseUrl + "?mode=" + data.game_mode + "&rounds=" + data.rounds + "&detail=" + data.detail + "&lobby_id=" + lobbyId;
         }
     };
@@ -187,18 +187,20 @@
         const rounds = roundsInput.value;
         let detail = "";
 
-        if (selectedMode === 'genre') detail = document.getElementById('genre-select').value;
-        else if (selectedMode === 'artist') detail = document.getElementById('mode-artist').value;
-        else detail = document.getElementById('spotify-input').value;
+        if (selectedMode === 'genre') {
+            detail = document.getElementById('genre-select').value;
+        } else if (selectedMode === 'artist') {
+            detail = document.getElementById('mode-artist').value;
+        } else {
+            detail = document.getElementById('spotify-input').value;
+        }
 
-        // Send config to consumers.py
         chatSocket.send(JSON.stringify({
             'type': 'start_game',
             'game_mode': selectedMode,
             'rounds': rounds,
             'detail': detail
         }));
-        
     });
 </script>
 {% endblock content %}
