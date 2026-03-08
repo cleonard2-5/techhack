@@ -5,6 +5,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 
 load_dotenv()
+import os
+print(f"DEBUG: SPOTIPY_CLIENT_ID = {os.environ.get('SPOTIPY_CLIENT_ID', 'NOT SET')[:5]}...")  # prints first 5 chars only for safety
 
 def get_random_song_from_playlist(playlist_url):
     try:
