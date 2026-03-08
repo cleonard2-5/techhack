@@ -171,12 +171,19 @@
         if (data.type === 'player_list' || data.type === 'points_update') {
             const scores = data.leaderboard || {};
             updateLeaderboardUI(scores);
-
+            
             if (data.type === 'points_update' && data.user === currentUsername) {
                 guessInput.placeholder = "Correct! +" + data.points + " pts";
                 guessInput.disabled = true;
                 revealSong();
             }
+        }
+        
+        if (data.type === 'incorrect_guess' && data.user === currentUsername) {
+            guessInput.classList.add('shake-error');
+            guessInput.placeholder = "Incorrect! Wait for next round...";
+            guessInput.disabled = true;
+            setTimeout(() => { guessInput.classList.remove('shake-error'); }, 500);
         }
 
         if (data.type === 'round_reveal') {
@@ -184,12 +191,6 @@
         }
 
         // Handle specific incorrect feedback
-        if (data.type === 'incorrect_guess' && data.user === currentUsername) {
-            guessInput.classList.add('shake-error');
-            guessInput.placeholder = "Incorrect! Wait for next round...";
-            guessInput.disabled = true;
-            setTimeout(() => { guessInput.classList.remove('shake-error'); }, 500);
-        }
 
         // COMBINED: Handled all song loading here
         if (data.type === 'load_new_round' || data.type === 'initial_song_data') {

@@ -151,7 +151,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         elif data.get('type') == 'round_reveal':
             await self.channel_layer.group_send(
                     self.lobby_group_name,
-                    {'type': 'round_reveal_event'}
+                    {'type': 'round_reveal'}
                 )
 
         # --- 3. Handle Next Round ---
@@ -168,6 +168,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                         'user': 'SYSTEM',
                         'message': 'Error fetching next song. Skipping...'
                     })
+                    return
 
                 state['current_round'] += 1
                 state['guessed_correctly'] = []
