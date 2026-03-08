@@ -6,6 +6,21 @@ from .youtube_utils import get_random_video_from_playlist
 connected_users = {}
 game_state = {}
 
+GENRE_PLAYLISTS = {
+    'rap': 'https://www.youtube.com/watch?v=D8fHatctfRo&list=PLm7wnjUQm_FAd_pmjhhWz0MRnGdUDptg4',
+    'pop': 'https://www.youtube.com/watch?v=kXYiU_JCYtU&list=PLoSw9A7teER13dJv-HEAOotSgY_YmqS0h',
+    'emo': 'https://www.youtube.com/watch?v=ekr2nIex040&list=PLuJAH0gKWEN686Jh6fQIlO0ue4O-nCK80',
+    'genre': 'https://www.youtube.com/watch?v=PE1r1zpknzY&list=PLDtG-mvFB_Eh-QuHT8tMkPdE2ZatkFSbS',
+}
+
+ARTIST_PLAYLISTS = {
+    'bear_ghost': 'https://youtube.com/playlist?list=PLatQ_1ySwOFK5I5L0wbvBKzvv6-gIH8DJ&si=071jYlwbyQjK5hQC',
+    'Set It Off': 'https://youtube.com/playlist?list=PLuSVDZ9w-aOgC-U_4cdPLHQ4RbJMDxNrs&si=rw14fPTbuD6NipKY',
+    'Tyler, The Creator': 'https://youtube.com/playlist?list=PLD2X1LpnqWOO7hHW_zB6xUPhH3vjRmobB&si=aZTJfXUqdUh4zB_I',
+    'Bruno Mars': 'https://youtube.com/playlist?list=PLcXtXCm2EMK_L2b7aF-QcW9WvgDr5thpj&si=6VisRq4V_xM5zQr8',
+    'artist': 'https://www.youtube.com/watch?v=KJSwujqz0XQ&list=PLg2Wl2toU_nVQO9z5a7vLBgGQwGr5FpvV',
+}
+
 class LobbyConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.lobby_name = self.scope['url_route']['kwargs']['lobby_id']
@@ -27,7 +42,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                 'round_number': state['current_round'],
                 'song_data': {
                     'name': state['current_answer'],
-                    'artist': state.get('current_artist', 'Unknown'), # Add artist to state in start_game
+                    'artist': state.get('current_artist', 'Unknown'),
                     'video_id': state.get('current_video_id'),
                     'cover_art': state.get('current_cover')
                 },
@@ -55,7 +70,14 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             players = connected_users.get(self.lobby_name, [])
             detail = data.get('detail')
             
-            song_data = await sync_to_async(get_random_video_from_playlist)(detail)
+            if game_mode == 'genre':
+                playlist_url = GENRE_PLAYLISTS.get(detail, detail)
+            elif game_mode == 'artist':
+                playlist_url = ARTIST_PLAYLISTS.get(detail, detail)
+            else:
+                playlist_url = detail
+            
+            song_data = await sync_to_async(get_random_video_from_playlist)(playlist_url)
             
             if song_data is None or 'error' in song_data:
                 error_msg = song_data['error'] if (song_data and 'error' in song_data) else 'Invalid YouTube link!'
