@@ -359,3 +359,39 @@ h3.stardew-font {
     filter: blur(0);
     opacity: 1;
 }
+
+.leaderboard-panel {
+    background-color: #bf7858; /* Terracotta/Wood base */
+    border: 6px solid #634d31; /* Dark brown border */
+    box-shadow: 6px 6px 0px rgba(99, 77, 49, 0.5);
+    border-radius: 4px;
+}
+
+.leaderboard-panel h6 {
+    color: #ffd3ac !important;
+    text-shadow: 2px 2px 0px #634d31;
+    font-size: 2.2rem !important;
+    letter-spacing: 2px;
+}
+
+.leaderboard-panel .border-bottom {
+    border-bottom: 4px dashed #634d31 !important;
+}
+
+.leaderboard-item {
+    color: #fff4e6 !important;
+    font-size: 1.6rem;
+}
+
+.leaderboard-rank {
+    color: #ffd3ac;
+    text-shadow: 1px 1px 0px #634d31;
+    margin-right: 5px;
+}
+
+.leaderboard-score-badge {
+    background-color: #634d31 !important;
+    color: #ffd3ac !important;
+    border: 2px solid #ffd3ac;
+    font-size: 1.1rem !important;
+}

@@ -191,6 +191,7 @@
         const message = messageInput.value;
         if (message) {
             chatSocket.send(JSON.stringify({
+                'type': 'chat_message',
                 'message': message
             }));
             messageInput.value = ''; 

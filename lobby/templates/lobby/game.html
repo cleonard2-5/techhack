@@ -19,14 +19,14 @@
 
         <div class="row justify-content-center">
             <div class="col-lg-3 position-absolute start-0 d-none d-lg-block" style="top: 50%; transform: translateY(-30%); z-index: 10;">
-                <div class="cozy-card p-3 shadow-lg">
-                    <div class="text-center border-bottom border-dark pb-2 mb-2">
-                        <h6 class="mb-0 stardew-font" style="font-size: 1.8rem; color: #634d31;">Leaderboard</h6>
+                <div class="leaderboard-panel p-3">
+                    <div class="text-center border-bottom pb-2 mb-2">
+                        <h6 class="mb-0 stardew-font">Leaderboard</h6>
                     </div>
-                    <ul class="list-group list-group-flush small stardew-font" style="font-size: 1.4rem;">
-                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2">
-                            <span><span style="color: #bf7858;">1st</span> {{ user.username }}</span>
-                            <span class="badge bg-dark rounded-pill">0</span>
+                    <ul class="list-group list-group-flush small stardew-font">
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2 leaderboard-item">
+                            <span><span class="leaderboard-rank">1st</span> {{ user.username }}</span>
+                            <span class="badge rounded-pill leaderboard-score-badge">0</span>
                         </li>
                     </ul>
                 </div>
@@ -171,12 +171,11 @@
 
         sortedEntries.forEach(([user, score], index) => {
             const rankText = (index === 0) ? "1st" : (index === 1) ? "2nd" : (index === 2) ? "3rd" : (index + 1) + "th";
-            const badgeColor = (index === 0) ? "#bf7858" : "#634d31";
             
             leaderboardList.innerHTML += `
-                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2">
-                    <span><span style="color: ${badgeColor};">${rankText}</span> ${user}</span>
-                    <span class="badge bg-dark rounded-pill">${score}</span>
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2 leaderboard-item">
+                    <span><span class="leaderboard-rank">${rankText}</span> ${user}</span>
+                    <span class="badge rounded-pill leaderboard-score-badge">${score}</span>
                 </li>`;
         });
     }
@@ -228,12 +227,11 @@
 
             sortedEntries.forEach(([user, score], index) => {
                 const rankText = (index === 0) ? "1st" : (index === 1) ? "2nd" : (index === 2) ? "3rd" : (index + 1) + "th";
-                const badgeColor = (index === 0) ? "#bf7858" : "#634d31";
                 
                 leaderboardList.innerHTML += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2">
-                        <span><span style="color: ${badgeColor};">${rankText}</span> ${user}</span>
-                        <span class="badge bg-dark rounded-pill">${score}</span>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2 leaderboard-item">
+                        <span><span class="leaderboard-rank">${rankText}</span> ${user}</span>
+                        <span class="badge rounded-pill leaderboard-score-badge">${score}</span>
                     </li>`;
             });
 

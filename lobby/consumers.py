@@ -111,6 +111,16 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                     'detail': detail
                 }
             )
+            
+        elif data.get('type') == 'chat_message':
+            await self.channel_layer.group_send(
+                self.lobby_group_name, 
+                {
+                    'type': 'lobby_message',
+                    'user': self.username,
+                    'message': data.get('message')
+                }
+            )
 
         # --- 2. Handle Guess Submissions ---
         elif data.get('type') == 'submit_guess':
