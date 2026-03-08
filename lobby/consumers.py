@@ -33,7 +33,6 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        
         state = game_state.get(self.lobby_name)
         
         if data.get('type') == 'start_game':
@@ -47,6 +46,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                 'playlist_url': data.get('detail'),
                 'current_answer': song_data['name'],
                 'guessed_correctly': [], # Reset every round
+                'has_guessed': [],
                 'scores': {user: 0 for user in players} # Persistent scores
             }
             
@@ -62,19 +62,19 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             if not state or self.username in state['guessed_correctly']:
                 return
 
+            if self.username not in state['has_guessed']:
+                state['has_guessed'].append(self.username)
+
             guess = data.get('guess', '').strip().lower()
             answer = state['current_answer'].strip().lower()
+            
 
             if guess == answer:
-                # Add user to the 'correct' list for this round
                 state['guessed_correctly'].append(self.username)
-                
-                # Calculate Points: 5 * (Total Players - Number of people who already guessed)
                 players = connected_users.get(self.lobby_name, [])
                 total_players = len(players)
                 rank = len(state['guessed_correctly'])
                 points_earned = 5 * (total_players - (rank - 1))
-                
                 state['scores'][self.username] += points_earned
 
                 # Broadcast the correct guess and updated leaderboard
@@ -84,13 +84,24 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                     'points': points_earned,
                     'leaderboard': state['scores']
                 })
+            else:
+                await self.send(text_data=json.dumps({
+                    'type': 'incorrect_guess',
+                    'user': self.username
+                }))
+                
+            players_in_lobby = connected_users.get(self.lobby_name, [])
+            if len(state['has_guessed']) >= len(players_in_lobby):
+                # Trigger next round immediately because everyone has tried!
+                await self.receive(json.dumps({'type': 'next_round'}))
 
         # --- 3. Handle Next Round ---
         elif data.get('type') == 'next_round':
             if not state: return
             if state['current_round'] < state['total_rounds']:
                 state['current_round'] += 1
-                state['guessed_correctly'] = [] # Reset guessers for new round
+                state['guessed_correctly'] = []
+                state['has_guessed'] = []
                 
                 song_data = await sync_to_async(get_random_video_from_playlist)(state['playlist_url'])
                 state['current_answer'] = song_data['name'] # Update the server's answer key

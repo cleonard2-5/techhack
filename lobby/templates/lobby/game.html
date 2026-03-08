@@ -13,7 +13,7 @@
                 <span class="text-muted fw-bold ms-2" style="font-family: 'VT323', monospace; font-size: 1.2rem; color: #8c6b4a !important;">{{ detail }}</span>
             </div>
             <div class="col-4 text-end">
-                <h4 class="text-danger fw-bold stardew-font" id="timer-display" style="font-size: 3.5rem; text-shadow: 2px 2px 0px #ffd3ac;">00:25</h4>
+                <h4 id="timer-display" class="text-danger fw-bold stardew-font" style="font-size: 3.5rem; text-shadow: 2px 2px 0px #ffd3ac;">00:25</h4>
             </div>
         </div>
 
@@ -96,17 +96,17 @@
     function startTimer() {
         clearInterval(timerInterval);
         timeLeft = 25;
-        document.getElementById('timer-display').innerText = "00:" + timeLeft;
+        const display = document.getElementById('timer-display');
         
         timerInterval = setInterval(() => {
             timeLeft--;
-            document.getElementById('timer-display').innerText = "00:" + (timeLeft < 10 ? "0" + timeLeft : timeLeft);
+            if (display) display.innerText = "00:" + (timeLeft < 10 ? "0" + timeLeft : timeLeft);
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 // ONLY THE HOST triggers the next round to keep everyone synced
                 if (currentPlayers.length > 0 && currentUsername === currentPlayers[0]) {
-                     gameSocket.send(JSON.stringify({'type': 'next_round'}));
+                    gameSocket.send(JSON.stringify({'type': 'next_round'}));
                 }
             }
         }, 1000);
@@ -132,6 +132,10 @@
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
+        if (data.type === 'player_list') {
+            currentPlayers = data.players;
+        }
+
         if (data.type === 'points_update') {
             // Update the UI: Leaderboard
             const leaderboardList = document.querySelector('.list-group');
@@ -156,7 +160,17 @@
                 const guessInput = document.getElementById('songGuess');
                 guessInput.placeholder = "Correct! +" + data.points + " pts";
                 guessInput.disabled = true;
+            } else if (data.type === 'incorrect_guess' && data.user === currentUsername) {
+                guessInput.classList.add('shake-error');
+                guessInput.placeholder = "Incorrect! Wait for next round...";
+                guessInput.disabled = true;
+
+                setTimeout(() => {
+                    guessInput.classList.remove('shake-error');
+                }, 500);
             }
+
+            currentPlayers = Object.keys(data.leaderboard);
         }
 
         if (data.type === 'load_new_round') {
