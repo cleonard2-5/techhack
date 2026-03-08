@@ -19,6 +19,21 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.lobby_group_name, self.channel_name)
         await self.accept()
+        
+        state = game_state.get(self.lobby_name)
+        if state:
+            await self.send(text_data=json.dumps({
+                'type': 'initial_song_data',
+                'round_number': state['current_round'],
+                'song_data': {
+                    'name': state['current_answer'],
+                    'artist': state.get('current_artist', 'Unknown'), # Add artist to state in start_game
+                    'video_id': state.get('current_video_id'),
+                    'cover_art': state.get('current_cover')
+                },
+                'leaderboard': state['scores']
+            }))
+
         await self.broadcast_player_list()
 
     async def disconnect(self, close_code):
@@ -51,11 +66,14 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             game_state[self.lobby_name] = {
                 'current_round': 1,
                 'total_rounds': int(data.get('rounds', 5)),
-                'playlist_url': data.get('detail'),
+                'playlist_url': detail,
                 'current_answer': song_data['name'],
-                'guessed_correctly': [], # Reset every round
+                'current_artist': song_data['artist'], # Save these for the sync!
+                'current_video_id': song_data['video_id'],
+                'current_cover': song_data['cover_art'],
+                'guessed_correctly': [],
                 'has_guessed': [],
-                'scores': {user: 0 for user in players} # Persistent scores
+                'scores': {user: 0 for user in players}
             }
             
             await self.channel_layer.group_send(

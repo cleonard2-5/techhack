@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .youtube_utils import get_random_video_from_playlist
 from .consumers import game_state
 
 def index(request, lobby_id):
@@ -13,25 +12,10 @@ def game(request):
     detail = request.GET.get('detail', 'none')
     lobby_id = request.GET.get('lobby_id', 'unknown')
 
-    video_id, song_cover, song_name, song_artist = "", "", "", ""
-    error_message = ""
-
-    if mode == 'spotify' or mode == 'playlist':
-        song_data = get_random_video_from_playlist(detail)
-        
-        if song_data and 'error' not in song_data:
-            video_id = song_data['video_id']
-            song_cover = song_data['cover_art']
-            song_name = song_data['name']
-            song_artist = song_data['artist']
-        else:
-            error_message = song_data['error'] if song_data else "Video not found."
-
     context = {
-        'mode': mode, 'rounds': rounds, 'detail': detail, 'lobby_id': lobby_id,
-        'video_id': video_id, 'song_cover': song_cover,
-        'song_name': song_name, 'song_artist': song_artist,
-        'error_message': error_message,
+        'mode': mode, 'rounds': rounds, 'detail': detail,
+        'lobby_id': lobby_id, 'video_id': "", 'song_cover': "", 
+        'song_name': "Loading...", 'song_artist': "Please wait",
     }
     return render(request, 'lobby/game.html', context)
 

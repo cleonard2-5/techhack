@@ -130,11 +130,55 @@
     submitBtn.onclick = sendGuess;
     guessInput.onkeyup = (e) => { if (e.key === 'Enter') sendGuess(); };
 
+    function updateLeaderboardUI(scores, playersList) {
+        const leaderboardList = document.querySelector('.list-group');
+        if (!leaderboardList) return;
+        leaderboardList.innerHTML = '';
+
+        // Sort entries by score (descending)
+        const sortedEntries = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        
+        // Update our local host-tracking list
+        currentPlayers = sortedEntries.map(entry => entry[0]);
+
+        sortedEntries.forEach(([user, score], index) => {
+            const rankText = (index === 0) ? "1st" : (index === 1) ? "2nd" : (index === 2) ? "3rd" : (index + 1) + "th";
+            const badgeColor = (index === 0) ? "#bf7858" : "#634d31";
+            
+            leaderboardList.innerHTML += `
+                <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 px-1 py-2">
+                    <span><span style="color: ${badgeColor};">${rankText}</span> ${user}</span>
+                    <span class="badge bg-dark rounded-pill">${score}</span>
+                </li>`;
+        });
+    }
+
     gameSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        if (data.type === 'player_list') {
-            currentPlayers = data.players;
+        if (data.type === 'player_list' || data.type === 'points_update') {
+            // Use the scores from the server, or default to 0 for everyone in the list
+            const scores = data.leaderboard || data.players.reduce((acc, p) => ({...acc, [p]: 0}), {});
+            updateLeaderboardUI(scores, data.players);
+
+            if (data.type === 'points_update' && data.user === currentUsername) {
+                guessInput.placeholder = "Correct! +" + data.points + " pts";
+                guessInput.disabled = true;
+            }
+        }
+
+        if (data.type === 'load_new_round' || data.type === 'initial_song_data') {
+            const song = data.song_data;
+            document.getElementById('round-text').innerText = "Round " + (data.round_number || 1) + " / {{ rounds }}";
+            document.getElementById('album-art').src = song.cover_art;
+            document.getElementById('song-name-display').innerText = "🎵 " + song.name;
+            document.getElementById('song-artist-display').innerText = "by " + song.artist;
+            
+            if (player && player.loadVideoById) {
+                player.loadVideoById(song.video_id);
+                player.playVideo();
+            }
+            startTimer();
         }
 
         if (data.type === 'points_update') {

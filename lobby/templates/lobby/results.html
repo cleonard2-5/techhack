@@ -7,7 +7,7 @@
 
   <div class="leaderboard">
     {% for player, score in sorted_scores %}
-      <div class="player-card {% if forloop.first %}first-place{% endif %}" style="animation-delay: calc({{ forloop.counter }} * 0.1s)">
+      <div class="player-card {% if forloop.first %}first-place{% endif %}">
         <div class="rank rank-{{ forloop.counter }}">
           <span class="rank-medal">
             {% if forloop.counter == 1 %}1st{% elif forloop.counter == 2 %}2nd{% elif forloop.counter == 3 %}3rd{% else %}{{ forloop.counter }}th{% endif %}
@@ -17,7 +17,7 @@
         <div class="player-score">{{ score }} <span>pts</span></div>
       </div>
     {% empty %}
-      <p class="text-center stardew-font" style="font-size: 1.8rem; color: #b8ada1;">No players joined this game.</p>
+      <p class="text-center stardew-font" style="font-size: 1.8rem; color: #b8ada1;">No scores were recorded for this session.</p>
     {% endfor %}
   </div>
 
