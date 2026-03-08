@@ -8,24 +8,28 @@ load_dotenv()
 
 def get_random_song_from_playlist(playlist_url):
     try:
-        # Move authentication inside the try block so it fails gracefully!
         client_credentials_manager = SpotifyClientCredentials(
             client_id=os.environ.get('SPOTIPY_CLIENT_ID'),
             client_secret=os.environ.get('SPOTIPY_CLIENT_SECRET')
         )
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-        # Safely extract the ID (handles weirdly formatted links)
+        # 1. Safely extract the ID
         if 'playlist/' in playlist_url:
             playlist_id = playlist_url.split('playlist/')[1].split('?')[0]
         else:
             playlist_id = playlist_url.split('/')[-1].split('?')[0]
 
-        # Fetch the tracks
-        results = sp.playlist_tracks(playlist_id)
+        # 2. Try to fetch the playlist
+        try:
+            results = sp.playlist_tracks(playlist_id)
+        except Exception as e:
+            print(f"Spotify API Error: {e}")
+            return {"error": "Invalid link! Make sure it is a public 'open.spotify.com/playlist/...' link."}
+
         tracks = results.get('items', [])
         
-        # Filter out tracks that labels have blocked the previews for
+        # 3. Filter for playable tracks
         valid_tracks = []
         for item in tracks:
             track = item.get('track')
@@ -33,23 +37,21 @@ def get_random_song_from_playlist(playlist_url):
                 valid_tracks.append(track)
 
         if not valid_tracks:
-            return None # No playable tracks found
+            return {"error": "Spotify blocked the previews for EVERY song in this playlist! Try an indie or older playlist."}
 
-        # Pick a random track
+        # 4. Success! Pick a track
         random_track = random.choice(valid_tracks)
 
-        song_data = {
+        return {
             'name': random_track['name'],
             'artist': random_track['artists'][0]['name'],
             'preview_url': random_track['preview_url'], 
             'cover_art': random_track['album']['images'][0]['url'] if random_track['album']['images'] else None
         }
 
-        return song_data
-
     except Exception as e:
-        print(f"Spotify Fetch Error: {e}")
-        return None
+        print(f"Server Fetch Error: {e}")
+        return {"error": f"Server Error: {str(e)}"}
     
 def get_random_song_by_artist(artist_name):
     try:
