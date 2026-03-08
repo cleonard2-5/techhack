@@ -206,3 +206,224 @@ h3.stardew-font {
     30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
     40%, 60% { transform: translate3d(4px, 0, 0); }
 }
+
+
+* {
+    font-family: 'VT323', monospace;
+}
+
+.results-wrapper {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: #f3efe6;
+}
+
+.results-title {
+    font-size: 3.3rem;
+    color: #bf7858;
+    letter-spacing: -1px;
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+
+.results-subtitle {
+    color: #b8ada1;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.leaderboard {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.leaderboard::-webkit-scrollbar {
+    width: 6px;
+}
+
+.leaderboard::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.leaderboard::-webkit-scrollbar-thumb {
+    background: #bf7858;
+    border-radius: 999px;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    background: #ffd3ac;
+    border: 3px solid #b8ada1;
+    transition: transform 0.2s ease, border-color 0.4s ease;
+    animation: slideIn 0.4s ease both;
+}
+
+.player-card:hover {
+    border-color: #7bae7f;
+}
+
+.player-card.first-place {
+    border-color: #DAA425;
+    background: #fff4e6;
+    transform: scale(1.05);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.rank {
+    font-size: 1.6rem;
+    min-width: 45px;
+    font-weight: 600;
+    color: #bf7858;
+    text-align: center;
+}
+
+.rank-1 { color: #DAA425; }
+.rank-2 { color: #c0c0c0; }
+.rank-3 { color: #cd7f32; }
+
+.player-name {
+    flex: 1;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: #634d31;
+}
+
+.player-score {
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: #bf7858;
+}
+
+.player-score span {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #b8ada1;
+    margin-left: 2px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 480px;
+}
+
+.btn-action {
+    background-color: #ffd3ac;
+    color: #bf7858;
+    flex: 1;
+    padding: 0.85rem 1rem;
+    border: 3px solid #bf7858;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-lobby:hover { background: #7bae7f; color: white; }
+.btn-leave:hover { background: #dca1a1; color: white; }
+
+.song-reveal-hidden {
+    filter: blur(8px);
+    opacity: 0.3;
+    pointer-events: none;
+    transition: filter 0.5s ease, opacity 0.5s ease;
+}
+
+.song-reveal-visible {
+    filter: blur(0);
+    opacity: 1;
+}
+
+.leaderboard-panel {
+    background-color: #bf7858; /* Terracotta/Wood base */
+    border: 6px solid #634d31; /* Dark brown border */
+    box-shadow: 6px 6px 0px rgba(99, 77, 49, 0.5);
+    border-radius: 4px;
+}
+
+.leaderboard-panel h6 {
+    color: #ffd3ac !important;
+    text-shadow: 2px 2px 0px #634d31;
+    font-size: 2.2rem !important;
+    letter-spacing: 2px;
+}
+
+.leaderboard-panel .border-bottom {
+    border-bottom: 4px dashed #634d31 !important;
+}
+
+.leaderboard-item {
+    color: #fff4e6 !important;
+    font-size: 1.6rem;
+}
+
+.leaderboard-rank {
+    color: #ffd3ac;
+    text-shadow: 1px 1px 0px #634d31;
+    margin-right: 5px;
+}
+
+.leaderboard-score-badge {
+    background-color: #634d31 !important;
+    color: #ffd3ac !important;
+    border: 2px solid #ffd3ac;
+    font-size: 1.1rem !important;
+}
+
+.django-form-stardew input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #fff4e6;
+    border: 4px solid #634d31;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+.django-form-stardew label {
+    font-family: 'VT323', monospace;
+    color: #634d31;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+.django-form-stardew ul.errorlist {
+    font-family: 'VT323', monospace;
+    color: #b71c1c;
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 1.2rem;
+}
+.django-form-stardew .helptext {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: #634d31;
+    display: block;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+}

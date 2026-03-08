@@ -17,16 +17,15 @@
   <style>
     .stardew-font {
         font-family: 'VT323', monospace;
-        font-size: 2rem;
-        color: #bf7858; 
+        font-size: 2rem; 
     }
   </style>
     <!-- Header -->
   <body>
     <nav class="p-2 navbar navbar-expand-lg" style="background-color: #bf7858; border-bottom: 4px solid #634d31;">
       <div class="container">
-        <a class="navbar-brand stardew-font text-white mb-0" href="{% url 'home.index' %}" style="font-size: 2.5rem; text-shadow: 2px 2px 0px #634d31;">
-            <img src="{% static 'img/title.png' %}" alt="TechHack Logo" style="height: 40px; margin-right: 10px; filter: drop-shadow(2px 2px 0px #634d31);">
+        <a class="navbar-brand mb-0" href="{% url 'home.index' %}">
+          <img src="{% static 'img/title.png' %}" alt="Song Meister" style="height: 55px; object-fit: contain;">
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
           aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,10 +34,6 @@
         
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav ms-auto navbar-ml stardew-font" style="font-size: 1.4rem;">
-            <a class="nav-link text-white text-decoration-none px-3" href="{% url 'plants.index' %}">Plants</a>
-            <a class="nav-link text-white text-decoration-none px-3" href="{% url 'home.index' %}">Home</a>
-            <a class="nav-link text-white text-decoration-none px-3" href="{% url 'lobby.index' lobby_id='general' %}">Lobby</a>
-            <a class="nav-link text-white text-decoration-none px-3" href="{% url 'game.index' %}">Game</a>
             
             <div class="vr bg-white mx-2 d-none d-lg-block"></div>
             
