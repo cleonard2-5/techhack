@@ -157,13 +157,26 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         # --- 3. Handle Next Round ---
         elif data.get('type') == 'next_round':
             if not state: return
+
             if state['current_round'] < state['total_rounds']:
+                
+                song_data = await sync_to_async(get_random_video_from_playlist)(state['playlist_url'])
+                
+                if not song_data or 'error' in song_data:
+                    await self.channel_layer.group_send(self.lobby_group_name, {
+                        'type': 'lobby_message',
+                        'user': 'SYSTEM',
+                        'message': 'Error fetching next song. Skipping...'
+                    })
+
                 state['current_round'] += 1
                 state['guessed_correctly'] = []
                 state['has_guessed'] = []
+                state['current_answer'] = song_data['name'] # This is now safe!
+                state['current_artist'] = song_data.get('artist', 'Unknown')
+                state['current_video_id'] = song_data.get('video_id')
+                state['current_cover'] = song_data.get('cover_art')
                 
-                song_data = await sync_to_async(get_random_video_from_playlist)(state['playlist_url'])
-                state['current_answer'] = song_data['name'] # Update the server's answer key
                 
                 await self.channel_layer.group_send(self.lobby_group_name, {
                     'type': 'load_new_round',

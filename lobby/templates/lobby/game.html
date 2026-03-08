@@ -74,16 +74,6 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    let player;
-    let timerInterval;
-    let timeLeft = 25;
-    let currentPlayers = ["{{ user.username }}"];
-    const lobbyId = "{{ lobby_id }}";
-    const currentUsername = "{{ user.username }}";
-    const initialVideoId = "{{ video_id }}";
-    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const gameSocket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/lobby/' + lobbyId + '/');
-
     function revealSong() {
         const container = document.getElementById('song-info-container');
         if (container) {
@@ -99,6 +89,17 @@
             container.style.opacity = "0.3";
         }
     }
+
+    let player;
+    let timerInterval;
+    let timeLeft = 25;
+    let currentPlayers = ["{{ user.username }}"];
+    const lobbyId = "{{ lobby_id }}";
+    const currentUsername = "{{ user.username }}";
+    const initialVideoId = "{{ video_id }}";
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const gameSocket = new WebSocket(wsScheme + '://' + window.location.host + '/ws/lobby/' + lobbyId + '/');
+
 
     function startTimer() {
         clearInterval(timerInterval);
