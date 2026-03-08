@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
 <div class="results-wrapper">
   <h1 class="results-title">Final Standings</h1>
   <p class="results-subtitle">Game Over</p>
@@ -18,4 +17,14 @@
         <div class="player-score">{{ score }} <span>pts</span></div>
       </div>
     {% empty %}
-      <p class="text
+      <p class="text-center stardew-font" style="font-size: 1.8rem; color: #b8ada1;">No players joined this game.</p>
+    {% endfor %}
+  </div>
+
+  <div class="action-buttons">
+    <a href="{% url 'lobby.index' lobby_id=lobby_id %}" class="btn-action btn-lobby">↩ Return to Lobby</a>
+    <a href="{% url 'home.index' %}" class="btn-action btn-leave">Leave Game</a>
+  </div>
+</div>
+
+{% endblock content %}
