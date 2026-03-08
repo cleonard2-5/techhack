@@ -62,16 +62,27 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
             # VALIDATE THE SPOTIFY LINK FIRST
             if game_mode == 'spotify':
-                # Run the Spotify check without freezing the server
                 song_data = await sync_to_async(get_random_song_from_playlist)(detail)
                 
-                if song_data is None:
-                    # Send an error back ONLY to the person who clicked start
+                if song_data is None or 'error' in song_data:
+                    error_msg = song_data['error'] if song_data else 'Unknown Spotify Error!'
+                    
                     await self.send(text_data=json.dumps({
                         'type': 'lobby_error',
-                        'message': 'Invalid link or no 30-second previews available on this playlist!'
+                        'message': error_msg
                     }))
-                    return # Stop here, do not redirect!
+                    return
+                # Run the Spotify check without freezing the server
+                
+            await self.channel_layer.group_send(
+                self.lobby_group_name,
+                {
+                    'type': 'game_start_redirect',
+                    'game_mode': game_mode,
+                    'rounds': data.get('rounds'),
+                    'detail': detail
+                }
+            )
 
             # IF VALID (OR NOT SPOTIFY MODE), REDIRECT EVERYONE
             await self.channel_layer.group_send(
