@@ -114,13 +114,10 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
         # --- 2. Handle Guess Submissions ---
         elif data.get('type') == 'submit_guess':
-            if not state or self.username in state['guessed_correctly']:
+            if not state or self.username in state['has_guessed']:
                 return
 
             state['has_guessed'].append(self.username)
-            
-            if self.username not in state['has_guessed']:
-                state['has_guessed'].append(self.username)
 
             guess = data.get('guess', '').strip().lower()
             answer = state['current_answer'].strip().lower()

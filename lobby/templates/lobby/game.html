@@ -241,7 +241,9 @@
                 const guessInput = document.getElementById('songGuess');
                 guessInput.placeholder = "Correct! +" + data.points + " pts";
                 guessInput.disabled = true;
-            } else if (data.type === 'incorrect_guess' && data.user === currentUsername) {
+            } 
+            
+            if (data.type === 'incorrect_guess' && data.user === currentUsername) {
                 guessInput.classList.add('shake-error');
                 guessInput.placeholder = "Incorrect! Wait for next round...";
                 guessInput.disabled = true;
