@@ -62,6 +62,8 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             if not state or self.username in state['guessed_correctly']:
                 return
 
+            state['has_guessed'].append(self.username)
+            
             if self.username not in state['has_guessed']:
                 state['has_guessed'].append(self.username)
 
