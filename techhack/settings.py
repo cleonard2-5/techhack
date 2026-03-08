@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'home',
     'lobby',
     'account',
+    'plants',
 ]
 
 ASGI_APPLICATION = 'techhack.asgi.application'
