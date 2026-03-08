@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .youtube_utils import get_random_video_from_playlist
+from .consumers import game_state
 
 def index(request, lobby_id):
     return render(request, 'lobby/index.html', {'lobby_id': lobby_id})
@@ -35,5 +36,16 @@ def game(request):
     return render(request, 'lobby/game.html', context)
 
 @login_required
-def results(request):
-    return render(request, 'lobby/results.html')
+def results(request, lobby_id):
+    # Fetch the scores from the in-memory game_state
+    state = game_state.get(lobby_id, {})
+    scores = state.get('scores', {})
+    
+    # Sort scores: Highest to Lowest
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    
+    context = {
+        'lobby_id': lobby_id,
+        'sorted_scores': sorted_scores
+    }
+    return render(request, 'lobby/results.html', context)

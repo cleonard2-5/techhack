@@ -199,7 +199,8 @@
         }
         
         if (data.type === 'game_over') {
-            window.location.href = "{% url 'results' %}";
+            // Pass the lobbyId to the results URL
+            window.location.href = `/lobby/results/${lobbyId}/`;
         }
     };
 
